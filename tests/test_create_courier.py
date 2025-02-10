@@ -17,7 +17,10 @@ class TestCreateCourier:
             'firstName': generate_random_string(10)
         }
         response = requests.post(Urls.URL_create_courier, data=payload)
-        assert response.status_code == 201 and response.json() == {'ok': True}
+        assert response.status_code == 201
+        assert response.json() == {'ok': True}
+        response_login = requests.post(Urls.URL_login_courier, data=payload)
+        assert requests.delete(f"{Urls.URL_delete_courier}/{response_login.json()['id']}")
 
     @allure.title('Создание курьера с уже существующим логином')
     @allure.description('Проверка статус-кода и тела ответа')
@@ -28,7 +31,8 @@ class TestCreateCourier:
             'firstName': generate_random_string(10)
         }
         response = requests.post(Urls.URL_create_courier, data=payload)
-        assert response.status_code == 409 and response.json() == {'code': 409, 'message': 'Этот логин уже используется. Попробуйте другой.'}
+        assert response.status_code == 409
+        assert response.json() == {'code': 409, 'message': 'Этот логин уже используется. Попробуйте другой.'}
 
     @allure.title('Создание курьера без заполнения обязательных полей')
     @allure.description('Проверка статус-кода и тела ответа')
